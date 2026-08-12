@@ -1,0 +1,10 @@
+Read x1, 0
+Read x2, 4
+x3 = x1 + x2
+Read x4, 8
+x3 = x3 + x4
+Read x5, 12
+x3 = x3 + x5
+Read x6, 16
+x3 = x3 + x6
+Write x3, 20

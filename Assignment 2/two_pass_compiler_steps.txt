@@ -1,0 +1,16 @@
+Pass 1
+│
+├── Read program.txt
+├── Remove comments
+├── Ignore empty lines
+├── Find labels
+└── Calculate instruction addresses
+         │
+         ▼
+Pass 2
+│
+├── Read program.txt again
+├── Ignore labels/comments
+├── Parse instructions
+├── Generate hexadecimal bytecode
+└── Add HALT
