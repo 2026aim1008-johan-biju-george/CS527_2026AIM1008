@@ -254,3 +254,82 @@ case RET:{
 ```
 
 That's the entire mechanism — `CALL` behaves like `BAL` except it remembers where to come back to.
+
+## The universal recipe — 4 touch points for *any* new instruction
+
+No matter what they ask you to add, it follows this same shape (exactly like `CALL`/`RET`):
+
+1. **Define the opcode** in both `compiler.h` and `processor.h` (they must match — an easy point to lose if you edit one and forget the other). Pick an unused hex value — you have `0x08`, and everything from `0x1F` up, free.
+2. **Add a parsing rule in `compile()`** — an `sscanf`/`strncmp` pattern matching the new syntax, placed *before* the final `else { printf("Invalid instruction..."); }`. Order matters: more specific patterns must come before more general ones that could also match.
+3. **Add an `execute()` case** in `processor.c` doing the actual operation, reading `dest`/`src1`/`src2` as needed.
+4. **Hand-trace a tiny test program** before trusting it — compute expected register/memory values yourself, then verify.
+
+If you only remember one thing walking into the test: **grep both header files for the opcode range you're about to use**, so you don't accidentally collide with an existing one.
+
+## Likely extensions, grouped by category
+
+**A. Bitwise/logical operations** (AND, OR, XOR, NOT, shifts) — very common addition since the ISA only has arithmetic right now.
+```c
+// processor.h / compiler.h
+#define AND 0x20
+#define OR  0x21
+#define XOR 0x22
+#define NOT 0x23
+#define SHL 0x24
+#define SHR 0x25
+```
+```c
+// compiler.c — same pattern as ADD
+else if(sscanf(line, "x%d = x%d & x%d", &dest, &src1, &src2) == 3)
+    fprintf(optr, "%02X %02X %02X %02X\n", AND, dest, src1, src2);
+```
+```c
+// processor.c
+case AND: Register[dest] = Register[src1] & Register[src2]; break;
+case NOT: Register[dest] = ~Register[src1]; break; // only 1 source operand
+```
+Watch for: `NOT` only needs `src1`, no `src2` — mirror the compiler pattern accordingly (`sscanf(line, "x%d = ~x%d", ...)`, 2 fields not 3).
+
+**B. Stack instructions** — `PUSH`/`POP` as standalone ops (separate from `CALL`), used to save/restore registers:
+```c
+case PUSH: SP -= 4; write_word(SP, Register[dest]); break;
+case POP:  Register[dest] = read_word(SP); SP += 4; break;
+```
+This is almost certainly testable if your course already covered `CALL`/`RET` with you — it's the natural next lab step, and lets you build **caller-saved register conventions** around function calls.
+
+**C. New addressing modes** — e.g. indexed load/store: `x%d = [x%d + %d]` (base register + constant offset):
+```c
+else if(sscanf(line, "x%d = [x%d + %d]", &dest, &addr_reg, &val) == 3)
+    fprintf(optr, "%02X %02X %02X %02X\n", LOAD_INDEXED, dest, addr_reg, val);
+```
+```c
+case LOAD_INDEXED: Register[dest] = read_word(Register[src1] + src2); break;
+```
+Careful: `src2` here is a small int stored in one byte — same range limit as branch offsets (max 255, or -128..127 if treated signed).
+
+**D. A NOP or new branch condition** — trivial but sometimes explicitly tested to check you understand the opcode table:
+```c
+case NOP: break; // does nothing, just consumes a cycle
+```
+
+**E. Simple I/O instructions** — `PRINT x%d` or `READ x%d` (reads from stdin) — tests whether you can add an instruction that *doesn't* fit the load/store/arithmetic mold:
+```c
+case PRINT: printf("Output: %d\n", Register[dest]); break;
+case READ: scanf("%d", &Register[dest]); break;
+```
+
+## Known weak spots worth fixing/knowing before the test
+
+These are prime "fix this bug" test material, since they're real gaps in the code you've been given:
+
+1. **`DIV_CONST` has no divide-by-zero check** (unlike `DIV`). If asked to "harden" the processor, this is the obvious first fix — add the same `if(operand2 != 0)` guard.
+2. **`decode()` does nothing but print** — if asked to "properly implement decode," you'd move some of `fetch()`'s field-extraction logic there, or use it to validate the opcode is legal before `execute()` runs.
+3. **Branch/CALL offsets are single-byte** — a program with a very long loop body could silently generate a wrong offset with no error. If asked to extend branch range, you'd need to widen the offset field (e.g. use 2 bytes, changing the instruction format from 4 bytes to 5, which cascades into `fetch()`, `Instruction[]` sizing, and `curr_addr += 4` becoming `+= 5` everywhere).
+4. **No stack overflow/underflow checking** on `CALL`/`RET`/`PUSH`/`POP` (we discussed this above) — a natural "add error handling" ask.
+5. **Register/memory bounds aren't validated on write** in most opcodes (only `read_word`/`write_word` check bounds) — if `dest` is garbage, `Register[dest]` could technically go out of the 256-register array in some inputs.
+
+## Quick self-test before you go in
+
+Given effort level, the highest-value 10 minutes right now is: pick **one** instruction from category A or B above, actually add it to your own copy of the files, write a 5-line test program, and hand-trace it. That rehearses the exact motion (header → compiler → processor → trace) you'll need to repeat live.
+
+Want me to pick one and actually walk through implementing it end-to-end in your files right now, as a dry run?
