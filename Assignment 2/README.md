@@ -318,18 +318,75 @@ case PRINT: printf("Output: %d\n", Register[dest]); break;
 case READ: scanf("%d", &Register[dest]); break;
 ```
 
-## Known weak spots worth fixing/knowing before the test
+**F. Decode() implementation** - `decode()` currently exists only as a placeholder — it prints a line but does no actual decoding work; `fetch()` already extracted the raw bytes, so **all** the interpretation currently happens implicitly inside `execute()`'s switch statement. A proper `decode()` step should do two things a real CPU's decode stage does: **translate the raw opcode into a meaningful instruction name**, and **catch illegal opcodes before execution is attempted** (rather than only after, in `execute()`'s `default` case).
 
-These are prime "fix this bug" test material, since they're real gaps in the code you've been given:
+Here's the implementation, continuing in the same lab copy:
 
-1. **`DIV_CONST` has no divide-by-zero check** (unlike `DIV`). If asked to "harden" the processor, this is the obvious first fix — add the same `if(operand2 != 0)` guard.
-2. **`decode()` does nothing but print** — if asked to "properly implement decode," you'd move some of `fetch()`'s field-extraction logic there, or use it to validate the opcode is legal before `execute()` runs.
-3. **Branch/CALL offsets are single-byte** — a program with a very long loop body could silently generate a wrong offset with no error. If asked to extend branch range, you'd need to widen the offset field (e.g. use 2 bytes, changing the instruction format from 4 bytes to 5, which cascades into `fetch()`, `Instruction[]` sizing, and `curr_addr += 4` becoming `+= 5` everywhere).
-4. **No stack overflow/underflow checking** on `CALL`/`RET`/`PUSH`/`POP` (we discussed this above) — a natural "add error handling" ask.
-5. **Register/memory bounds aren't validated on write** in most opcodes (only `read_word`/`write_word` check bounds) — if `dest` is garbage, `Register[dest]` could technically go out of the 256-register array in some inputs.
+```c
+/* Decodes fetched instruction: translates the raw opcode into a
+   human-readable mnemonic, and flags illegal opcodes before execute() runs. */
+void decode(){
+   printf("Decoding instruction bytes %d-%d:\n", instruction_PC, instruction_PC + 3);
 
-## Quick self-test before you go in
+   char *mnemonic;
+   switch(opcode){
+      case HALT: mnemonic = "HALT"; break;
+      case ADD: mnemonic = "ADD"; break;
+      case SUB: mnemonic = "SUB"; break;
+      case MUL: mnemonic = "MUL"; break;
+      case DIV: mnemonic = "DIV"; break;
+      case LOAD: mnemonic = "LOAD"; break;
+      case STORE: mnemonic = "STORE"; break;
+      case MOV: mnemonic = "MOV"; break;
+      case ADD_CONST: mnemonic = "ADD_CONST"; break;
+      case SUB_CONST: mnemonic = "SUB_CONST"; break;
+      case MUL_CONST: mnemonic = "MUL_CONST"; break;
+      case DIV_CONST: mnemonic = "DIV_CONST"; break;
+      case LOAD_CONST: mnemonic = "LOAD_CONST"; break;
+      case STORE_CONST: mnemonic = "STORE_CONST"; break;
+      case MOV_CONST: mnemonic = "MOV_CONST"; break;
+      case BEQ: mnemonic = "BEQ"; break;
+      case BNE: mnemonic = "BNE"; break;
+      case BCS: mnemonic = "BCS"; break;
+      case BCC: mnemonic = "BCC"; break;
+      case BMI: mnemonic = "BMI"; break;
+      case BPL: mnemonic = "BPL"; break;
+      case BVS: mnemonic = "BVS"; break;
+      case BVC: mnemonic = "BVC"; break;
+      case BHI: mnemonic = "BHI"; break;
+      case BLS: mnemonic = "BLS"; break;
+      case BGE: mnemonic = "BGE"; break;
+      case BLT: mnemonic = "BLT"; break;
+      case BGT: mnemonic = "BGT"; break;
+      case BLE: mnemonic = "BLE"; break;
+      case BAL: mnemonic = "BAL"; break;
+      case AND: mnemonic = "AND"; break;
+      case PUSH: mnemonic = "PUSH"; break;
+      case POP: mnemonic = "POP"; break;
+      default:
+         mnemonic = "INVALID";
+         printf("Decode error: unrecognized opcode %d at PC=%d\n", opcode, instruction_PC);
+         end_of_simulation = 1;
+         break;
+   }
 
-Given effort level, the highest-value 10 minutes right now is: pick **one** instruction from category A or B above, actually add it to your own copy of the files, write a 5-line test program, and hand-trace it. That rehearses the exact motion (header → compiler → processor → trace) you'll need to repeat live.
+   printf("-> %s  (dest=%d, src1=%d, src2=%d)\n", mnemonic, dest, src1, src2);
+}
+```
+Now let's verify both behaviors — normal decoding, and catching an illegal opcode. For the normal case, reuse the `AND`/`PUSH`/`POP` test program:To demonstrate the illegal-opcode catch, I'll bypass the compiler and hand-write a `program.byte` containing an opcode that doesn't exist (`0xFF`), then run the fetch–decode–execute loop directly:Both cases confirmed:
 
-Want me to pick one and actually walk through implementing it end-to-end in your files right now, as a dry run?
+**Valid program** — `decode()` now prints the actual instruction name (`MOV_CONST`, `AND`, `HALT`) instead of a blank line, making trace output far easier to read and debug.
+
+**Illegal opcode** — the fetch stage read the invalid byte, and **`decode()` caught it and set `end_of_simulation = 1` before `execute()` even ran the switch statement**. (Notice `execute()`'s existing `default` case still also fires afterward and prints its own message — that's harmless redundancy since `main.c`'s loop only rechecks `end_of_simulation` *between* iterations, not mid-iteration. If you wanted decode's catch to fully preempt execute in the same cycle, you'd add `if(end_of_simulation) return;` as the first line of `execute()` — worth mentioning to a grader as a design choice even if you don't implement it.)
+
+## A bonus bug this test surfaced
+
+Look closely at the output: `Opcode: -1`, not `255`. That's because `Instruction[]` is declared `char Instruction[256]` — a **signed** type on most platforms — so the byte `0xFF` gets sign-extended to `-1` when assigned into the `int opcode` variable. It happened not to matter here (an invalid opcode is still correctly rejected either way), but it's a real correctness issue worth knowing: **any legitimate opcode value ≥ 0x80** would sign-extend into a large negative number and never match any `case` in the switch, silently falling into `default`. Your actual opcode table tops out at `0x22` (well under `0x80`), so this isn't currently biting you — but if a test asks you to extend the opcode range, or asks "what's a latent bug in this code," this is a strong answer: **`Instruction[]` should be `unsigned char[]`**, not `char[]`.
+
+## Recap of `decode()`'s job in this architecture
+
+- `fetch()` — pulls raw bytes out of memory
+- `decode()` (now) — interprets what those bytes *mean*: names the instruction, and rejects it early if it's not a legal opcode
+- `execute()` — performs the actual computation
+
+This is the correct separation of concerns for a lab answer: if asked "why have a separate decode stage at all," the answer is exactly this — **validation and interpretation belong before execution, not tangled inside it**, and real pipelined CPUs stall or fault at decode for precisely this reason.
