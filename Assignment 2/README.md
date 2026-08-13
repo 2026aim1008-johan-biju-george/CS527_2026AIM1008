@@ -85,7 +85,7 @@ These match standard ARM condition-flag semantics, which is why `branch_taken` c
 ---
 
 Example:
-```
+```text
 x1 = 0          % index
 x2 = 0          % sum
 x3 = 0          % array address
@@ -184,4 +184,73 @@ At `.exit`: `x3 = 12 + 4 = 16`, then `[x3] = x2` → `Data[16] = 6`.
 2. **The branch range is only ±127/−128** (signed 8-bit offset), since `generate_branch` truncates to one byte. For this program the offsets (24, −24) are tiny, so it's fine — but a much longer program with a `BAL` back to the very top could silently produce a wrong offset if it exceeds that range, since there's no overflow check in `generate_branch`.
 3. **`x15` as a register name** works fine here since the register file has 256 entries, but it's easy to typo a register number when hand-writing assembly like this — nothing in the compiler validates that `dest`/`src` stay in a sane range.
 
-Want me to also trace what happens if the array is empty (`size = 0`), or check this program against a different set of array values you have in mind?
+## Possible extensions of the assignment
+
+### Function Calls
+
+Adding function calls means giving the simulator two things it currently lacks: a **call stack** (to remember where to return to) and two new instructions, **CALL** and **RET**, that use it. Here's how to build that on top of your existing design.
+
+## 1. Design decisions to make first
+
+- **Where does the stack live?** Reuse `Data[]` — it's already 4096 bytes and unused space at the top works well as a stack growing *downward*.
+- **What tracks the stack top?** Add a new global `int SP` (stack pointer), separate from the general-purpose `Register[]` array, initialized in `reset()`.
+- **Calling convention** (a rule your compiled programs must follow, same as any real ISA): e.g. arguments passed in `x1`–`x4`, return value in `x1`. This isn't enforced by the CPU — it's just a convention your assembly source follows.
+
+## 2. New opcodes
+
+You have unused opcode slots after `BAL (0x1E)`. Add to both `compiler.h` and `processor.h`:
+
+```c
+#define CALL 0x1F
+#define RET  0x20
+```
+
+## 3. Compiler changes (`compiler.c`)
+
+`CALL` can reuse your existing `generate_branch()` machinery exactly like `BEQ`/`BAL` — it's just a jump with a saved return address, so it still encodes as a PC-relative offset in the 4th byte:
+
+```c
+else if(sscanf(line, "CALL %s", label) == 1){
+    generate_branch(optr, label, CALL, curr_addr);
+}
+else if(strncmp(line, "RET", 3) == 0){
+    fprintf(optr, "%02X %02X %02X %02X\n", RET, 0, 0, 0);
+}
+```
+
+Add these as new `else if` branches before your final `else { printf("Invalid instruction..."); }` catch-all.
+
+## 4. Processor changes (`processor.c` / `processor.h`)
+
+**Add the stack pointer and initialize it in `reset()`:**
+
+```c
+int SP; // stack pointer, points to next free word (grows downward)
+...
+void reset(){
+   ...
+   SP = 4092; // top of Data memory, last valid word address
+}
+```
+
+**Add execution logic in `execute()`'s switch:**
+
+```c
+case CALL:{
+   int return_addr = instruction_PC + 4; // address of the instruction after CALL
+   SP -= 4;
+   write_word(SP, return_addr);          // push return address
+   PC = instruction_PC + src2;           // jump into the function (same offset trick as branches)
+   printf("Call: pushed return address %d, PC <- %d\n", return_addr, PC);
+   break;
+}
+
+case RET:{
+   PC = read_word(SP);   // pop return address
+   SP += 4;
+   printf("Return: PC <- %d\n", PC);
+   break;
+}
+```
+
+That's the entire mechanism — `CALL` behaves like `BAL` except it remembers where to come back to.
