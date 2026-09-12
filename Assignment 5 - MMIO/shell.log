@@ -1,0 +1,40 @@
+Mini-computer OS starting (4 processors)...
+Type a program filename (e.g. prog1.txt) and press Enter
+Type 'exit' to stop accepting new programs; already-running tasks finish first.
+
+$ sum_of_two_arrays.txt sum_of_two_arrays_data.byte
+Compilation successful.
+
+MMU: proc 0 loaded 32 instruction bytes (1 page) + 68 data bytes (1 page)
+Loader: pid 1 assigned to processor 0 (ready)
+Shell: submitted sum_of_two_arrays.txt sum_of_two_arrays_data.byte -> pid 1
+$ sum_of_two_arrays.txt sum_of_two_arrays_2_data.byte
+Compilation successful.
+
+MMU: proc 1 loaded 32 instruction bytes (1 page) + 68 data bytes (1 page)
+Loader: pid 2 assigned to processor 1 (ready)
+Shell: submitted sum_of_two_arrays.txt sum_of_two_arrays_2_data.byte -> pid 2
+$ sum_of_two_arrays.txt sum_of_two_arrays_3_data.byte
+Compilation successful.
+
+MMU: proc 2 loaded 32 instruction bytes (1 page) + 68 data bytes (1 page)
+Loader: pid 3 assigned to processor 2 (ready)
+Shell: submitted sum_of_two_arrays.txt sum_of_two_arrays_3_data.byte -> pid 3
+$ sum_of_two_arrays.txt sum_of_two_arrays_4_data.byte
+Compilation successful.
+
+MMU: proc 3 loaded 32 instruction bytes (1 page) + 68 data bytes (1 page)
+Loader: pid 4 assigned to processor 3 (ready)
+Shell: submitted sum_of_two_arrays.txt sum_of_two_arrays_4_data.byte -> pid 4
+$ Scheduler: pid 1 halted, wrote results to sum_of_two_arrays_data.byte
+OS: pid 1 finished, processor 0 freed
+$ Scheduler: pid 2 halted, wrote results to sum_of_two_arrays_2_data.byte
+OS: pid 2 finished, processor 1 freed
+$ Scheduler: pid 3 halted, wrote results to sum_of_two_arrays_3_data.byte
+OS: pid 3 finished, processor 2 freed
+$ Scheduler: pid 4 halted, wrote results to sum_of_two_arrays_4_data.byte
+OS: pid 4 finished, processor 3 freed
+$ exit
+Shell: exit received - no longer accepting new input; remaining tasks will run to completion.
+
+All tasks complete, shell closed. End of simulation.

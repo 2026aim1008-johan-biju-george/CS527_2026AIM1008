@@ -1,0 +1,312 @@
+Fetching instruction bytes 0-3:
+Opcode: 44 | Destination: 1 | Operand 1: 0 | Operand 2: 4
+Decoding instruction bytes 0-3:
+Executing instruction bytes 0-3:
+V10 <- M[4] = 1
+V11 <- M[8] = 2
+V12 <- M[12] = 3
+V13 <- M[16] = 4
+V14 <- M[20] = 5
+V15 <- M[24] = 6
+V16 <- M[28] = 7
+V17 <- M[32] = 8
+
+Fetching instruction bytes 4-7:
+Opcode: 32 | Destination: 0 | Operand 1: 0 | Operand 2: 1
+Decoding instruction bytes 4-7:
+Executing instruction bytes 4-7:
+Print v1 = [1 2 3 4 5 6 7 8] (logged for P0)
+
+Fetching instruction bytes 8-11:
+Opcode: 44 | Destination: 2 | Operand 1: 0 | Operand 2: 36
+Decoding instruction bytes 8-11:
+Executing instruction bytes 8-11:
+V20 <- M[36] = 4
+V21 <- M[40] = 5
+V22 <- M[44] = 6
+V23 <- M[48] = 7
+V24 <- M[52] = 8
+V25 <- M[56] = 9
+V26 <- M[60] = 10
+V27 <- M[64] = 16
+
+Fetching instruction bytes 12-15:
+Opcode: 32 | Destination: 0 | Operand 1: 0 | Operand 2: 2
+Decoding instruction bytes 12-15:
+Executing instruction bytes 12-15:
+Print v2 = [4 5 6 7 8 9 10 16] (logged for P0)
+
+Fetching instruction bytes 16-19:
+Opcode: 33 | Destination: 3 | Operand 1: 1 | Operand 2: 2
+Decoding instruction bytes 16-19:
+Executing instruction bytes 16-19:
+V30 <- V10 + V20 = 1 + 4 = 5
+V31 <- V11 + V21 = 2 + 5 = 7
+V32 <- V12 + V22 = 3 + 6 = 9
+V33 <- V13 + V23 = 4 + 7 = 11
+V34 <- V14 + V24 = 5 + 8 = 13
+V35 <- V15 + V25 = 6 + 9 = 15
+V36 <- V16 + V26 = 7 + 10 = 17
+V37 <- V17 + V27 = 8 + 16 = 24
+
+Fetching instruction bytes 20-23:
+Opcode: 32 | Destination: 0 | Operand 1: 0 | Operand 2: 3
+Decoding instruction bytes 20-23:
+Executing instruction bytes 20-23:
+Print v3 = [5 7 9 11 13 15 17 24] (logged for P0)
+
+Fetching instruction bytes 24-27:
+Opcode: 46 | Destination: 68 | Operand 1: 0 | Operand 2: 3
+Decoding instruction bytes 24-27:
+Executing instruction bytes 24-27:
+M[68] <- V30 = 5
+M[72] <- V31 = 7
+M[76] <- V32 = 9
+M[80] <- V33 = 11
+M[84] <- V34 = 13
+M[88] <- V35 = 15
+M[92] <- V36 = 17
+M[96] <- V37 = 24
+
+Fetching instruction bytes 28-31:
+Opcode: 0 | Destination: 0 | Operand 1: 0 | Operand 2: 0
+Decoding instruction bytes 28-31:
+Executing instruction bytes 28-31:
+Program executed successfully.
+Fetching instruction bytes 0-3:
+Opcode: 44 | Destination: 1 | Operand 1: 0 | Operand 2: 4
+Decoding instruction bytes 0-3:
+Executing instruction bytes 0-3:
+V10 <- M[4] = 1
+V11 <- M[8] = 2
+V12 <- M[12] = 3
+V13 <- M[16] = 4
+V14 <- M[20] = 5
+V15 <- M[24] = 6
+V16 <- M[28] = 7
+V17 <- M[32] = 8
+
+Fetching instruction bytes 4-7:
+Opcode: 32 | Destination: 0 | Operand 1: 0 | Operand 2: 1
+Decoding instruction bytes 4-7:
+Executing instruction bytes 4-7:
+Print v1 = [1 2 3 4 5 6 7 8] (logged for P0)
+
+Fetching instruction bytes 8-11:
+Opcode: 44 | Destination: 2 | Operand 1: 0 | Operand 2: 36
+Decoding instruction bytes 8-11:
+Executing instruction bytes 8-11:
+V20 <- M[36] = 4
+V21 <- M[40] = 5
+V22 <- M[44] = 6
+V23 <- M[48] = 7
+V24 <- M[52] = 8
+V25 <- M[56] = 9
+V26 <- M[60] = 10
+V27 <- M[64] = 16
+
+Fetching instruction bytes 12-15:
+Opcode: 32 | Destination: 0 | Operand 1: 0 | Operand 2: 2
+Decoding instruction bytes 12-15:
+Executing instruction bytes 12-15:
+Print v2 = [4 5 6 7 8 9 10 16] (logged for P0)
+
+Fetching instruction bytes 16-19:
+Opcode: 33 | Destination: 3 | Operand 1: 1 | Operand 2: 2
+Decoding instruction bytes 16-19:
+Executing instruction bytes 16-19:
+V30 <- V10 + V20 = 1 + 4 = 5
+V31 <- V11 + V21 = 2 + 5 = 7
+V32 <- V12 + V22 = 3 + 6 = 9
+V33 <- V13 + V23 = 4 + 7 = 11
+V34 <- V14 + V24 = 5 + 8 = 13
+V35 <- V15 + V25 = 6 + 9 = 15
+V36 <- V16 + V26 = 7 + 10 = 17
+V37 <- V17 + V27 = 8 + 16 = 24
+
+Fetching instruction bytes 20-23:
+Opcode: 32 | Destination: 0 | Operand 1: 0 | Operand 2: 3
+Decoding instruction bytes 20-23:
+Executing instruction bytes 20-23:
+Print v3 = [5 7 9 11 13 15 17 24] (logged for P0)
+
+Fetching instruction bytes 24-27:
+Opcode: 46 | Destination: 68 | Operand 1: 0 | Operand 2: 3
+Decoding instruction bytes 24-27:
+Executing instruction bytes 24-27:
+M[68] <- V30 = 5
+M[72] <- V31 = 7
+M[76] <- V32 = 9
+M[80] <- V33 = 11
+M[84] <- V34 = 13
+M[88] <- V35 = 15
+M[92] <- V36 = 17
+M[96] <- V37 = 24
+
+Fetching instruction bytes 28-31:
+Opcode: 0 | Destination: 0 | Operand 1: 0 | Operand 2: 0
+Decoding instruction bytes 28-31:
+Executing instruction bytes 28-31:
+Program executed successfully.
+Fetching instruction bytes 0-3:
+Opcode: 44 | Destination: 1 | Operand 1: 0 | Operand 2: 4
+Decoding instruction bytes 0-3:
+Executing instruction bytes 0-3:
+V10 <- M[4] = 1
+V11 <- M[8] = 2
+V12 <- M[12] = 3
+V13 <- M[16] = 4
+V14 <- M[20] = 5
+V15 <- M[24] = 6
+V16 <- M[28] = 7
+V17 <- M[32] = 8
+
+Fetching instruction bytes 4-7:
+Opcode: 32 | Destination: 0 | Operand 1: 0 | Operand 2: 1
+Decoding instruction bytes 4-7:
+Executing instruction bytes 4-7:
+Print v1 = [1 2 3 4 5 6 7 8] (logged for P0)
+
+Fetching instruction bytes 8-11:
+Opcode: 44 | Destination: 2 | Operand 1: 0 | Operand 2: 36
+Decoding instruction bytes 8-11:
+Executing instruction bytes 8-11:
+V20 <- M[36] = 4
+V21 <- M[40] = 5
+V22 <- M[44] = 6
+V23 <- M[48] = 7
+V24 <- M[52] = 8
+V25 <- M[56] = 9
+V26 <- M[60] = 10
+V27 <- M[64] = 16
+
+Fetching instruction bytes 12-15:
+Opcode: 32 | Destination: 0 | Operand 1: 0 | Operand 2: 2
+Decoding instruction bytes 12-15:
+Executing instruction bytes 12-15:
+Print v2 = [4 5 6 7 8 9 10 16] (logged for P0)
+
+Fetching instruction bytes 16-19:
+Opcode: 33 | Destination: 3 | Operand 1: 1 | Operand 2: 2
+Decoding instruction bytes 16-19:
+Executing instruction bytes 16-19:
+V30 <- V10 + V20 = 1 + 4 = 5
+V31 <- V11 + V21 = 2 + 5 = 7
+V32 <- V12 + V22 = 3 + 6 = 9
+V33 <- V13 + V23 = 4 + 7 = 11
+V34 <- V14 + V24 = 5 + 8 = 13
+V35 <- V15 + V25 = 6 + 9 = 15
+V36 <- V16 + V26 = 7 + 10 = 17
+V37 <- V17 + V27 = 8 + 16 = 24
+
+Fetching instruction bytes 20-23:
+Opcode: 32 | Destination: 0 | Operand 1: 0 | Operand 2: 3
+Decoding instruction bytes 20-23:
+Executing instruction bytes 20-23:
+Print v3 = [5 7 9 11 13 15 17 24] (logged for P0)
+
+Fetching instruction bytes 24-27:
+Opcode: 46 | Destination: 68 | Operand 1: 0 | Operand 2: 3
+Decoding instruction bytes 24-27:
+Executing instruction bytes 24-27:
+M[68] <- V30 = 5
+M[72] <- V31 = 7
+M[76] <- V32 = 9
+M[80] <- V33 = 11
+M[84] <- V34 = 13
+M[88] <- V35 = 15
+M[92] <- V36 = 17
+M[96] <- V37 = 24
+
+Fetching instruction bytes 28-31:
+Opcode: 0 | Destination: 0 | Operand 1: 0 | Operand 2: 0
+Decoding instruction bytes 28-31:
+Executing instruction bytes 28-31:
+Program executed successfully.
+Fetching instruction bytes 0-3:
+Opcode: 44 | Destination: 1 | Operand 1: 0 | Operand 2: 4
+Decoding instruction bytes 0-3:
+Executing instruction bytes 0-3:
+V10 <- M[4] = 1
+V11 <- M[8] = 2
+V12 <- M[12] = 3
+V13 <- M[16] = 4
+V14 <- M[20] = 5
+V15 <- M[24] = 6
+V16 <- M[28] = 7
+V17 <- M[32] = 8
+
+Fetching instruction bytes 4-7:
+Opcode: 32 | Destination: 0 | Operand 1: 0 | Operand 2: 1
+Decoding instruction bytes 4-7:
+Executing instruction bytes 4-7:
+Print v1 = [1 2 3 4 5 6 7 8] (logged for P0)
+
+Fetching instruction bytes 8-11:
+Opcode: 44 | Destination: 2 | Operand 1: 0 | Operand 2: 36
+Decoding instruction bytes 8-11:
+Executing instruction bytes 8-11:
+V20 <- M[36] = 4
+V21 <- M[40] = 5
+V22 <- M[44] = 6
+V23 <- M[48] = 7
+V24 <- M[52] = 8
+V25 <- M[56] = 9
+V26 <- M[60] = 10
+V27 <- M[64] = 16
+
+Fetching instruction bytes 12-15:
+Opcode: 32 | Destination: 0 | Operand 1: 0 | Operand 2: 2
+Decoding instruction bytes 12-15:
+Executing instruction bytes 12-15:
+Print v2 = [4 5 6 7 8 9 10 16] (logged for P0)
+
+Fetching instruction bytes 16-19:
+Opcode: 33 | Destination: 3 | Operand 1: 1 | Operand 2: 2
+Decoding instruction bytes 16-19:
+Executing instruction bytes 16-19:
+V30 <- V10 + V20 = 1 + 4 = 5
+V31 <- V11 + V21 = 2 + 5 = 7
+V32 <- V12 + V22 = 3 + 6 = 9
+V33 <- V13 + V23 = 4 + 7 = 11
+V34 <- V14 + V24 = 5 + 8 = 13
+V35 <- V15 + V25 = 6 + 9 = 15
+V36 <- V16 + V26 = 7 + 10 = 17
+V37 <- V17 + V27 = 8 + 16 = 24
+
+Fetching instruction bytes 20-23:
+Opcode: 32 | Destination: 0 | Operand 1: 0 | Operand 2: 3
+Decoding instruction bytes 20-23:
+Executing instruction bytes 20-23:
+Print v3 = [5 7 9 11 13 15 17 24] (logged for P0)
+
+Fetching instruction bytes 24-27:
+Opcode: 46 | Destination: 68 | Operand 1: 0 | Operand 2: 3
+Decoding instruction bytes 24-27:
+Executing instruction bytes 24-27:
+M[68] <- V30 = 5
+M[72] <- V31 = 7
+M[76] <- V32 = 9
+M[80] <- V33 = 11
+M[84] <- V34 = 13
+M[88] <- V35 = 15
+M[92] <- V36 = 17
+M[96] <- V37 = 24
+
+Fetching instruction bytes 28-31:
+Opcode: 0 | Destination: 0 | Operand 1: 0 | Operand 2: 0
+Decoding instruction bytes 28-31:
+Executing instruction bytes 28-31:
+Program executed successfully.
+Compilation - first pass:
+
+Compilation - second pass:
+Compilation - first pass:
+
+Compilation - second pass:
+Compilation - first pass:
+
+Compilation - second pass:
+Compilation - first pass:
+
+Compilation - second pass:

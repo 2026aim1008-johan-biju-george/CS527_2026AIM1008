@@ -1,0 +1,8 @@
+% assuming N = 8
+v1 = [4]         % vector 1 in location 4 to 35
+Print v1
+v2 = [36]        % vector 2 in location 36 to 67
+Print v2
+v3 = v1 + v2     % Addition of vector 1 and vector 2
+Print v3
+[68] = v3        % Vector output stored in location 68

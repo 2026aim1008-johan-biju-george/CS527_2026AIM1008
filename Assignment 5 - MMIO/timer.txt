@@ -1,0 +1,4 @@
+% timer.txt
+x2 = [4104]    % read DEV_TIMER (offset 8 → data-relative 4096+8)
+[4096] = x2    % write low byte to console out
+HALT

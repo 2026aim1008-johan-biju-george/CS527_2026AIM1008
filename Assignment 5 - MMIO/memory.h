@@ -1,0 +1,71 @@
+#ifndef MEMORY_H
+#define MEMORY_H
+
+/* Number of processors in the system (compile-time constant) */
+#define NP 4
+
+#define MEMSIZE 8192 // total physical memory, shared across all processors
+#define PAGESIZE 512 // bytes per page/frame
+
+/* MMIO constants — immediately after MEMSIZE/PAGESIZE/NUM_PHYSICAL_PAGES */
+#define MMIO_SIZE    512                        /* one page of device registers */
+#define MMIO_BASE    MEMSIZE                    /* physical address 8192 */
+#define MMIO_FRAME   (MEMSIZE / PAGESIZE)       /* frame 16 — magic, not a RAM frame */
+
+/* User data region stays 4096 bytes; the MMIO window is a separate
+   logical page that a task can address past its user data. */
+#define USER_DATA_SIZE     4096
+#define DATA_MEM_SIZE      (USER_DATA_SIZE + MMIO_SIZE)   /* 4608 */
+#define MMIO_DATA_OFFSET   USER_DATA_SIZE                 /* 4096, data-relative */
+
+#define NUM_PHYSICAL_PAGES (MEMSIZE / PAGESIZE) // 16 frames total - frame 0 reserved, never allocated
+#define NUM_LOGICAL_PAGES ((1024 / PAGESIZE) + (DATA_MEM_SIZE / PAGESIZE)) /* 2 (instr) + 9 (8 data + 1 MMIO) = 11 */
+
+// extern char Instruction[NP][INSTR_MEM_SIZE];
+// extern char Data[NP][DATA_MEM_SIZE];
+extern unsigned char memory[MEMSIZE];
+
+/* Page table now lives in a physical frame. This array says which frame
+   holds each processor's page table (0 = no page table loaded). */
+extern int pageTableFrame[NP];
+
+#define TLB_SIZE 4  /* entries per processor */
+
+typedef struct {
+    int valid;  /* 0 = empty slot */
+    int vpn;  /* virtual page number cached here */
+    int frame; /* physical frame that vpn maps to */
+} TLBEntry;
+
+extern TLBEntry tlb[NP][TLB_SIZE];
+
+/* Exposed for diagnostics; prefer tlb_stats() over reading these directly. */
+extern unsigned long tlb_hits[NP];
+extern unsigned long tlb_misses[NP];
+
+void flush_tlb(int proc_id);
+void tlb_stats(int proc_id, unsigned long *hits, unsigned long *misses);
+
+/* PTE layout: 1 byte per entry, NUM_LOGICAL_PAGES entries, packed at the
+   start of the page table's frame. 0 = unmapped (frame 0 is reserved). */
+#define PTE_SIZE 1
+
+extern char freePages[NUM_PHYSICAL_PAGES];
+
+int getFreePage(void);
+void freePage(int frame);
+int free_page_count(void);
+
+int getPhysicalAddress(int proc_id, int isFetch, int address);
+
+#define INSTR_MEM_SIZE 256
+#define DATA_MEM_SIZE 4096
+
+int initialize(int proc_id, const char* instruction_filename, const char* memory_filename);
+int count_pages_needed(const char* instruction_filename, const char* memory_filename);
+void finalize(int proc_id, const char* memory_filename);
+
+int read_word(int proc_id, int address);
+void write_word(int proc_id, int address, int value);
+
+#endif
